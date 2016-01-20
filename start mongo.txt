@@ -1,0 +1,1 @@
+mongod.exe --port 27017  --dbpath D:\\data\\db

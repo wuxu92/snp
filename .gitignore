@@ -1,0 +1,10 @@
+*.exe
+*.exe*
+*.tmp
+*.zip
+*.rar
+*.7z
+*.tar
+*tmp
+*.o
+*.obj
