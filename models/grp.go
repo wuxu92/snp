@@ -39,6 +39,43 @@ func (this *Group) GetSites() map[string]Site {
 	return sites
 }
 
+func (this *Group) Copy() Group{
+	grp := Group{
+		bson.NewObjectId(),
+		time.Now().Format(time.RFC3339),
+		this.Title,
+		this.Owner,
+		this.GroupLink,
+		true,
+		true,
+		this.Id.Hex(),
+		this.AdditionalStyle,
+		nil,
+		1,
+	}
+	sites := make([]bson.ObjectId, len(this.Sites))
+	for idx, siteId := range this.Sites {
+		old := GetSiteById(siteId)
+		tmpSite := old.Copy()
+		sites[idx] = tmpSite.Id
+	}
+	grp.Sites = sites
+	// save group to mongo
+	c := utils.GetMgc().GetDB().C("grp")
+	err := c.Insert(&grp)
+	utils.ErrChk(err)
+	return grp
+}
+
+func GetGroupById(id bson.ObjectId) Group {
+	db := utils.GetMgc().GetDB()
+	c := db.C("grp")
+	grp := Group{}
+	err := c.FindId(id).One(&grp)
+	utils.ErrChk(err)
+	return grp
+}
+
 func GetGroupFromSites(title string, sites []Site, start, length int) Group {
 	group := Group{}
 	group.Id = bson.NewObjectId()

@@ -11,11 +11,22 @@ type Mgc struct {
 	session *mgo.Session
 }
 
+var instance *Mgc = nil
+
+func GetMgc() *Mgc {
+	if instance == nil {
+		instance = new(Mgc)
+	}
+	return instance
+}
+
 func (mgc *Mgc) GetSession() *mgo.Session {
 	if mgc.session == nil {
 		host := beego.AppConfig.String("mgoHost")
 		port := beego.AppConfig.String("port")
 		user := beego.AppConfig.String("mgoUser")
+		dbName := beego.AppConfig.String("mgoDB")
+
 		password := beego.AppConfig.String("mgoPassword")
 		if len(host) == 0 {
 			host = "127.0.0.1"
@@ -23,6 +34,11 @@ func (mgc *Mgc) GetSession() *mgo.Session {
 		if len(port) > 0 {
 			host += ":" + port
 		}
+		if len(dbName) == 0 {
+			dbName = "snp"
+		}
+		host += "/" + dbName
+
 		if len(user) > 0 {
 			host = "mongodb://" + user + ":" + password + "@" + host
 		}

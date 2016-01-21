@@ -73,6 +73,7 @@ func(ctl *InitController) Get() {
   ctl.Data["Email"] = "admin@wuxu92.com"
   ctl.Layout = "layout/main.html"
   ctl.TplNames = "init.tpl"
+  ctl.Render()
 }
 
 func PrintQuery(query *mgo.Query) {
