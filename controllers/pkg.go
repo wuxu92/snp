@@ -7,6 +7,7 @@ import (
 
 	"github.com/astaxie/beego"
 	"time"
+	"errors"
 )
 
 type PkgController struct {
@@ -38,7 +39,7 @@ func (this *PkgController) Get() {
 			data := make(map[string]interface{})
 			if err != nil {
 				data["code"] = -1
-				data["err"] = err
+				data["err"] = err.Error()
 				this.Data["json"] = &data
 			} else {
 				data["code"] = 0
@@ -56,6 +57,12 @@ func forkPkg(name string, newName string) (models.Pkg, error){
 	old, err := models.GetPkgByName(name)
 	if err != nil {
 		return models.Pkg{}, err
+	}
+	// check if newName exist
+	chkPkg, _ := models.GetPkgByName(newName)
+//	fmt.Println("name:", chkPkg.Name, )
+	if chkPkg.Name == newName {
+		return models.Pkg{}, errors.New("pkg name already exist")
 	}
 	return old.Copy(newName)
 }
