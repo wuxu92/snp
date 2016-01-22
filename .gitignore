@@ -9,3 +9,5 @@
 *.o
 *.obj
 .idea/
+logs/
+log/

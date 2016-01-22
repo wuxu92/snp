@@ -27,7 +27,7 @@ func (this *Group) GetSites() map[string]Site {
 		return nil
 	}
 	sites := make(map[string]Site)
-	c := utils.GetDBStatic().C("site")
+	c := utils.GetMgc().GetDB().C("site")
 	//  fmt.Println(this.Title, "has sites: ", len(this.Sites))
 	for _, sid := range this.Sites {
 		site := Site{}
@@ -67,13 +67,55 @@ func (this *Group) Copy() Group{
 	return grp
 }
 
+func (this *Group) HasSite(url string) bool {
+	for _, s := range this.GetSites() {
+		if s.Url == url {
+			return true
+		}
+	}
+	return false
+}
+
+func (this *Group) AddSite(title, url string) (Site, error) {
+	site := Site{
+		bson.NewObjectId(),
+		title,
+		url,
+		time.Now().Format(time.RFC3339),
+		true,
+	}
+	err := utils.GetMgc().GetDB().C("site").Insert(site)
+	if err != nil {
+		return Site{}, err
+	}
+	utils.GetLogger().Info("insert site: %s", site.Id.Hex())
+	this.Sites = append(this.Sites, site.Id)
+	this.Update()
+	return site, nil
+}
+
+func (this *Group) Update() bool {
+	c := utils.GetMgc().GetDB().C("grp")
+	err := c.UpdateId(this.Id, this)
+	return err == nil
+}
+
 func GetGroupById(id bson.ObjectId) Group {
-	db := utils.GetMgc().GetDB()
-	c := db.C("grp")
+	// db := utils.GetMgc().GetDB()
+	c := utils.GetMgc().GetDB().C("grp")
 	grp := Group{}
 	err := c.FindId(id).One(&grp)
 	utils.ErrChk(err)
 	return grp
+}
+
+func IsGroupExist(id bson.ObjectId) bool {
+	c := utils.GetMgc().GetDB().C("grp")
+	count, err := c.FindId(id).Count()
+	if err != nil {
+		return false
+	}
+	return count > 0
 }
 
 func GetGroupFromSites(title string, sites []Site, start, length int) Group {

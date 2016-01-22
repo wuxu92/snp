@@ -1,13 +1,14 @@
 package controllers
 
 import (
-	"fmt"
+	// "fmt"
 	"snp/models"
 	//	"strings"
 
 	"github.com/astaxie/beego"
 	"time"
 	"errors"
+	"snp/utils"
 )
 
 type PkgController struct {
@@ -17,41 +18,43 @@ type PkgController struct {
 func (this *PkgController) Get() {
 	action := this.Ctx.Input.Param(":action")
 	id := this.Ctx.Input.Param(":id")
-	fmt.Println("model: pkg", " action: ", action, "id: ", id)
+	utils.GetLogger().Info("model: pkg, action: %s, id: %s", action, id)
 
+	data := ResObj{}
 	switch action {
 	case "get":
 		if id == "d" {
 			id = "default"
 		}
-		fmt.Println("getting pkg:", id)
-		this.Data["json"] = models.GetPkgFullInfo(id)
-		this.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf8")
-		this.ServeJson()
+		utils.GetConsole().Info("-getting pkg: %s", id)
+		data.code = 0
+		data.message = ""
+		data.data = models.GetPkgFullInfo(id)
+		this.Data["json"] = data.Json()
 	case "new":
 	case "fork":
-		fmt.Println("fork pkg:", id)
+		utils.GetConsole().Info("forking; %s", id)
 		if id == "" {
 			this.Data["json"] = false
 		} else {
 			name := this.GetString("name", "pkg-"+time.Now().Format(time.Stamp))
 			pkg, err := forkPkg(id, name)
-			data := make(map[string]interface{})
 			if err != nil {
-				data["code"] = -1
-				data["err"] = err.Error()
-				this.Data["json"] = &data
+				data.code = -1
+				data.message = err.Error()
 			} else {
-				data["code"] = 0
-				data["err"] = pkg.Name
-				this.Data["json"] = &data
+				data.code = 0
+				data.message = pkg.Name
 			}
 		}
-		this.ServeJson()
 	}
-
+	this.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf8")
+	this.ServeJson()
 }
 
+/**
+ * fork a package
+ */
 func forkPkg(name string, newName string) (models.Pkg, error){
 	// copy package
 	old, err := models.GetPkgByName(name)

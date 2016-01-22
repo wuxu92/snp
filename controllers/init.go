@@ -6,6 +6,7 @@ import(
   "gopkg.in/mgo.v2/bson"
   "snp/models"
   "fmt"
+  "snp/utils"
 )
 
 type InitController struct {
@@ -13,11 +14,9 @@ type InitController struct {
 }
 
 func(ctl *InitController) Get() {
-  session, err := mgo.Dial("127.0.0.1:27017")
-  if err != nil {
-    panic(err)
-  }
-  defer session.Close()
+  session := utils.GetMgc().GetSession()
+
+  // defer session.Close()
   
   session.SetMode(mgo.Monotonic, true)
   
@@ -31,7 +30,7 @@ func(ctl *InitController) Get() {
     siteArr[idx] = sites[idx]
   }
   fmt.Println("to insert site count: ", len(sites))
-  err = c.Insert(siteArr...)
+  err := c.Insert(siteArr...)
   ErrorChk(err)
 //  query := c.Find(bson.M{})// .All(&result)
   fmt.Print("insert sites:")

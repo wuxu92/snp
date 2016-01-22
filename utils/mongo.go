@@ -5,6 +5,8 @@ import (
 	//  "gopkg.in/mgo.v2/bson"
 	"github.com/astaxie/beego"
 	//  "strings"
+	// "fmt"
+	"time"
 )
 
 type Mgc struct {
@@ -15,6 +17,7 @@ var instance *Mgc = nil
 
 func GetMgc() *Mgc {
 	if instance == nil {
+		GetConsole().Info("new mgc client")
 		instance = new(Mgc)
 	}
 	return instance
@@ -42,12 +45,20 @@ func (mgc *Mgc) GetSession() *mgo.Session {
 		if len(user) > 0 {
 			host = "mongodb://" + user + ":" + password + "@" + host
 		}
+		GetConsole().Info("connect to mongo: %s", host)
 		session, err := mgo.Dial(host)
 		ErrChk(err)
 		mgc.session = session
 		mgc.session.SetMode(mgo.Monotonic, true)
+		mgc.session.SetSocketTimeout(60 * time.Second)
+	} else {
+		// GetConsole().Info("reuse session")
 	}
 	return mgc.session
+}
+
+func (this *Mgc) GetRawSession() *mgo.Session {
+	return this.session
 }
 
 func (this *Mgc) GetDB() *mgo.Database {
@@ -58,6 +69,12 @@ func (this *Mgc) GetDB() *mgo.Database {
 	db := this.GetSession().DB(dbName)
 	return db
 }
+
+//func (this *Mgc) Insert(col string, ins interface{}, others ...interface{}) bool {
+//	c := this.GetDB().C(col)
+//	c.Insert(ins)
+//	return c.Insert(others)
+//}
 
 func (this *Mgc) Close() {
 	this.session.Close()
