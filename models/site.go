@@ -30,12 +30,27 @@ func (this *Site) Copy() Site {
 	return site
 }
 
+func (this *Site) Update() error {
+	c := utils.GetMgc().GetDB().C("site")
+	return c.UpdateId(this.Id, this)
+}
+
 func GetSiteById(id bson.ObjectId) Site {
 	c := utils.GetMgc().GetDB().C("site")
 	site := Site{}
 	err := c.FindId(id).One(&site)
 	utils.ErrChk(err)
 	return site
+}
+
+func IsSiteExist(id bson.ObjectId) bool {
+	c := utils.GetMgc().GetDB().C("site")
+	n, err := c.FindId(id).Count()
+	if err !=  nil {
+		return false
+	} else {
+		return n > 0
+	}
 }
 
 func GetInitSites() []Site {

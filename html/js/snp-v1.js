@@ -2,7 +2,7 @@
 * @Author: wuxu92
 * @Date:   2016-01-14 21:29:40
 * @Last Modified by:   wuxu92
-* @Last Modified time: 2016-01-20 22:19:50
+* @Last Modified time: 2016-01-23 17:42:47
 */
 
 'use strict';
@@ -74,6 +74,14 @@ var grpsVM = new Vue({
       name: "",
       url: "http://",
     },
+    editSite: {
+      name: "",
+      url: "",
+      id: "",
+      gid: "",
+      sIdx: "",
+      gIdx: ""
+    },
     newSiteToGroup: ""
   },
   methods: {
@@ -84,14 +92,147 @@ var grpsVM = new Vue({
       console.log("add site to group: " + gIdx)
     },
     saveSite: function() {
-      this.groups[this.addSiteIndex].sites.push({name: this.newSite.name, url: this.newSite.url})
-      this.newSite.name = ""
-      this.newSite.url = "http://"
+      var site = {
+        name: this.newSite.name,
+        url: this.newSite.url
+      }
+      var grpIndx = this.addSiteIndex
+      // ajax request add site
+      var uri = addSiteUri
+      $.ajax({
+        url: uri,
+        type: 'post',
+        dataType: 'json',
+        data: {
+          grp: this.groups[grpIndx].id,
+          title: site.name,
+          url: site.url
+        }
+      })
+      .done(function(data) {
+        if (typeof data == "string")
+          data = $.parseJSON(data)
+        if (data.code != 0) {
+          console.log("add site error: " + data.message)
+          alert(data.message)
+          return
+        }
+        grpsVM.groups[grpIndx].sites.push(site)
+        console.log("success");
+        grpsVM.newSite.name = ""
+        grpsVM.newSite.url = ""
+      })
+      .fail(function() {
+        console.log("error");
+      })
+      .always(function() {
+        console.log("complete");
+      });
       $("#new-site-modal").modal('hide')
+    },
+    editGroupSites: function(gIdx, event) {
+      // change this group's color
+      var nodes = $("a.site[data-gidx="+gIdx+"]")
+      var curNode = $(event.target)
+      // console.log(nodes)
+      if (curNode.hasClass("editing-site")) {
+        nodes.removeClass('editSite')
+        curNode.removeClass("editing-site")
+      } else {
+        nodes.addClass('editSite')
+        curNode.addClass("editing-site")
+      }
+
+    },
+    editSiteModal: function(siteId, event) {
+      var node = $(event.target)
+      // console.log($(event.target))
+      if (!node.hasClass('editSite'))
+        return true
+      else {
+        event.preventDefault()
+        event.stopPropagation()
+        // return false
+      }
+      var gIdx = node.data("gidx")
+      var sIdx = node.data("sidx")
+      console.log("edit:" + gIdx + ", sid:" +sIdx)
+      if (typeof sIdx === "undefined" || typeof gIdx === "undefined") {
+        return
+      }
+      // get old site
+      var group = this.groups[gIdx]
+      if (typeof group === "undefined") {
+        console.log("old site not exist: " + gIdx + "/" + sIdx)
+        return false
+      }
+      var old = group.sites[sIdx]
+      console.log(group)
+      console.log(old)
+      this.editSite.name = old.name
+      this.editSite.url = old.url
+      this.editSite.id = old.id
+      this.editSite.gid = group.id
+      this.editSite.sIdx = sIdx
+      this.editSite.gIdx = gIdx
+      // var parent = node.parent('div')
+      // node.parent('div').width(parent.width() * 3)
+      $('#edit-site-modal').modal('show')
+      $('#edit-site-modal input').first().focus()
+      event.preventDefault()
+      event.stopPropagation()
+      return false
+    },
+    updateSite: function(event) {
+      console.log(event)
+      var node = $(event.target)
+      var site = this.editSite
+      if (!site.gid || !site.id) {
+        console.log("data err")
+        return
+      }
+      // ajax update site
+      $.ajax({
+        url: editSiteUri+site.id,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+          grp: site.gid,
+          title: site.name,
+          url: site.url
+        },
+      })
+      .done(function(data) {
+        console.log(data)
+        if (typeof data == "string")
+          data = $.parseJSON(data)
+        if (data.code != 0) {
+          console.log("update failed:" + data.message)
+          alert("error:" + data.message)
+          return false
+        }
+        var originSite = grpsVM.groups[site.gIdx].sites[site.sIdx]
+        originSite.name = site.name
+        originSite.url = site.url
+        for (var i in grpsVM.editSite) {
+          grpsVM.editSite[i] = ""
+        }
+        $('#edit-site-modal').modal('hide')
+        // update local show
+      })
+      .fail(function() {
+        console.log("error");
+      })
+      .always(function() {
+        console.log("complete");
+      });
+
     }
   }
 })
 var pkgUri = "api/pkg/get/default"
+var addSiteUri = "api/new/site"
+var editSiteUri = "api/site/edit/" // ?grp=
 $.ajax({
   url: pkgUri,
   type: 'GET',
@@ -99,9 +240,10 @@ $.ajax({
 })
 .done(function(data) {
   console.log(data);
-  if (data instanceof String) {
+  if (typeof data == "string") {
     data = $.parseJSON(data);
   }
+  data = data.data
   // build groups
   if (!data.hasOwnProperty("groups") || !data.hasOwnProperty("sites")) {
     console.log("data corrupted")
@@ -114,11 +256,16 @@ $.ajax({
     grp = reGrps[idx]
     var tmp = {}
     tmp.title = grp.title
+    tmp.id = idx
     tmp.sites = []
     for (var sIdx in grp.sites) {
       sIdx = grp.sites[sIdx];
       site = data.sites[sIdx]
-      tmp.sites.push({name: site.title.substr(0, 8), url: site.url})
+      tmp.sites.push({
+        name: site.title.substr(0, 8),
+        url: site.url,
+        id: sIdx
+      })
     }
     newGrps.push(tmp)
   }

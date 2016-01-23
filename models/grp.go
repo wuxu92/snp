@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
+	"reflect"
 )
 
 type Group struct {
@@ -76,6 +77,14 @@ func (this *Group) HasSite(url string) bool {
 	return false
 }
 
+func (this *Group) HasSiteId(id bson.ObjectId) bool {
+	for _, sid := range this.Sites {
+		if reflect.DeepEqual(sid, id) {
+			return true
+		}
+	}
+	return false
+}
 func (this *Group) AddSite(title, url string) (Site, error) {
 	site := Site{
 		bson.NewObjectId(),

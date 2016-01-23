@@ -2,8 +2,14 @@
 * @Author: wuxu92
 * @Date:   2016-01-14 22:04:42
 * @Last Modified by:   wuxu92
-* @Last Modified time: 2016-01-15 11:38:31
+* @Last Modified time: 2016-01-23 17:41:31
 */
+header {
+
+}
+h3#page-title {
+  text-align: center;
+}
 article {
   min-width: 110px;
   width: 80%;
@@ -27,24 +33,17 @@ article {
 
 .tools>a {
   padding: 1px 2px;
+  cursor: pointer;
 }
-.tools span {
-  color: #A5A5A5;
-}
-.tools span:hover {
-  color: #337AB7;
-}
+.tools span { color: #A5A5A5; }
+.tools span:hover { color: #337AB7; }
+.tools .editing-site { color:#079934; }
 
-.sites-row {
-  margin: 0;
-}
+.sites-row { margin: 0; }
 .site-col {
   text-align: center;
   padding: 0 4px;
   border-right: 1px solid #eee;
-}
-.sites-row > .site-col:first-child {
-  /*border-left: 1px solid #eee;*/
 }
 
 .site-col a {
@@ -63,6 +62,23 @@ article {
   text-decoration: none;
 }
 
+.editSite {
+  background: #9CCEAF;
+  cursor: alias;
+  margin-bottom: 2px;
+  border-bottom: 1px solid #eee;
+}
+.editSite:hover {
+  background: #accebf !important;
+}
+.site-col input {
+  border: 0;
+  border-bottom: 1px dotted;
+  outline: none;
+  display: inline;
+  margin-right: 6px;
+  /*margin-bottom: 16px;*/
+}
 /*modals*/
 .modal input {
   border: 0;
@@ -74,9 +90,25 @@ article {
   border-bottom: 1px solid;
 }
 .modal-body {
-  width: 60%;
+  width: 80%;
   margin: 0 auto;
 }
-.modal-footer {
+.modal-footer { text-align: center; }
+
+.modal input[type=text] { width: 400px; }
+
+/*edit site*/
+#deleteSite {
+  position: absolute;
+  top: 38%;
+  right: -20px;
+}
+
+#deleteSiteBtn {
+  width: 50px;
+  height: 50px;
+}
+
+footer {
   text-align: center;
 }

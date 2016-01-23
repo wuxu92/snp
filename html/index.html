@@ -3,6 +3,7 @@
 <head>
   <title>SNP Project!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="Content-type" content="text/html; chartset=utf8">
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
   <link rel="stylesheet" type="text/css" href="/css/snp.css">
   <script src="/js/jquery-2.2.0.min.js" type="text/javascript" charset="utf-8"></script>
@@ -14,7 +15,7 @@
 </head>
 <body>
 <header id="header" class="">
-
+  <h3 id="page-title">Shared Navigation Page!</h3>
 </header><!-- /header -->
 <hr>
 <article id="navi-container">
@@ -22,7 +23,7 @@
     <div class="grp-head">
     <span class="grp-title"><strong>{{ group.title }}</strong></span>
       <span class="tools">
-        <a v-bind:data-gidx="gIdx" title="编辑">
+        <a v-bind:data-gidx="gIdx" title="编辑" v-on:click.prevent.stop="editGroupSites(gIdx, $event)">
           <span class="glyphicon glyphicon-edit"></span>
         </a>
         <a v-bind:data-gidx="gIdx" title="添加网址" v-on:click.prevent.stop="addSiteToGroup(gIdx, $event)">
@@ -35,8 +36,14 @@
     </div>
     <div class="contianer">
     <div class="row sites-row">
-      <div class="col-xs-4 col-sm-3 col-md-2 col-lg-1 site-col" v-for="(sIdx, site) in group.sites">
-        <a href="" :href="site.url" target="_blank" v-bind:data-sidx="sIdx">{{site.name}}</a>
+      <div class="col-xs-4 col-sm-3 col-md-2 col-lg-2 site-col" v-for="(sIdx, site) in group.sites">
+        <a class="site" :href="site.url" target="_blank" v-bind:data-gidx="gIdx" v-bind:data-sidx="sIdx" v-on:click="editSiteModal(site.id, $event)">{{site.name}}</a>
+        <!-- <div style="display:none; margin-top: 3px">
+          <input type="text" class="editTitle" v-bind:value="site.name" placeholder="Title" style="width: 15%">
+          <input type="text" class="editUrl" v-bind:value="site.url" placeholder="Url" style="width: 55%">
+          <button class="btn btn-sm" v-on:click="updateSite(gIdx, sIdx, $event)" title="保存修改">修改</button>
+          <span class="glyphicon glyphicon-remove remove-site" style="margin-left: 6px; cursor: pointer" aria-hidden="true" title="删除"></span>
+        </div> -->
       </div>
     </div>
     </div>
@@ -52,12 +59,35 @@
           </div>
           <!-- <p>添加一个网址到组 </p> -->
           <div class="modal-body">
-            <input type="text" v-model="newSite.name" placeholder="网站名"> <br>
-            <input type="url" v-model="newSite.url">
+            <input type="text" v-model="newSite.name" placeholder="网站名" > <br>
+            <input type="text" v-model="newSite.url">
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
             <button type="button" class="btn btn-primary" v-on:click="saveSite">添加</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="edit-site-modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">编辑<strong></strong>网站</h4>
+          </div>
+          <!-- <p>添加一个网址到组 </p> -->
+          <div class="modal-body">
+            <input type="hidden" v-model="editSite.id" > <br>
+            <input type="text" v-model="editSite.name" placeholder="网站名" > <br>
+            <input type="text" v-model="editSite.url">
+            <div id="deleteSite">
+              <button class="btn btn-danger" id="deleteSiteBtn">删除</button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" v-on:click="updateSite">提交</button>
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
