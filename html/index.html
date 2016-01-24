@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
   <title>SNP Project!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -82,7 +82,7 @@
             <input type="text" v-model="editSite.name" placeholder="网站名" > <br>
             <input type="text" v-model="editSite.url">
             <div id="deleteSite">
-              <button class="btn btn-danger" id="deleteSiteBtn">删除</button>
+              <button class="btn btn-danger" id="deleteSiteBtn" v-on:click="deleteSite">删除</button>
             </div>
           </div>
           <div class="modal-footer">

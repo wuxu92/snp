@@ -30,10 +30,8 @@ func (this *SiteController) Get() {
 	}
 }
 
-/**
- *for edit site, request method post
- * /api/site/edit/siteId?grp=grpid
- */
+// Post for edit site, request method post
+// /api/site/edit/siteId?grp=grpid
 func (this *SiteController) Post() {
 	action := this.Ctx.Input.Param(":action")
 	sid := this.Ctx.Input.Param(":id")
@@ -88,6 +86,58 @@ func (this *SiteController) Post() {
 	}
 	this.Data["json"] = data.Json()
 	this.ServeJson()
+}
+
+// Delete uri: /api/site/delete/:id?grp=gid delete
+// @todo add grp and password
+func (this *SiteController)Delete() {
+  sid := this.Ctx.Input.Param(":id")
+  action := this.Ctx.Input.Param(":action")
+  gid := this.GetString("grp")
+
+  data := ResObj{}
+  utils.GetConsole().Info("a: %s, site: %s, grp: %s -- %s", action, sid, gid)
+  if !bson.IsObjectIdHex(sid) || !bson.IsObjectIdHex(gid) {
+    data.code = 1
+    data.message = "one of site or grp is illeagal"
+    this.Data["json"] = data.Json()
+    this.ServeJson()
+    return
+  }
+  siteId := bson.ObjectIdHex(sid)
+  grpId := bson.ObjectIdHex(gid)
+
+  if ge, se := !models.IsGroupExist(grpId), !models.IsSiteExist(siteId); se || ge{
+    data.code = 2
+    if !se {
+      data.message = "site not exist"
+    } else if !ge {
+      data.message = "group not exist"
+    } else {
+      data.message = "group and site not exist"
+    }
+    this.json(data)
+    return
+  }
+
+  grp := models.GetGroupById(grpId)
+  if !grp.HasSiteId(siteId) {
+    //data.code = 3
+    //data.message = "grp don't has this site"
+    this.json(ResObj{3, "grp don't has this site", nil})
+    return
+  }
+
+  // remove site from grp
+  grp.RemoveSite(siteId)
+  // save to db
+  grp.Update()
+  this.json(ResObj{0, "ok", nil})
+}
+
+func (this *SiteController) json(d ResObj) {
+  this.Data["json"] = d.Json()
+  this.ServeJson()
 }
 
 func getSite(id string) models.Site {

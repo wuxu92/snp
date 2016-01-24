@@ -31,7 +31,13 @@ func (this *NewModelController) Post() {
 		site, err := newSite(title, url, grp)
 		if err == nil {
 			data.code = 0
-			data.data = site
+
+			// config data
+			reSite := make(map[string]interface{})
+			reSite["title"] = site.Title
+			reSite["url"]   = site.Url
+			reSite["id"]	  = site.Id.Hex()
+			data.data = reSite
 		} else {
 			data.code = 1
 			data.message = err.Error()

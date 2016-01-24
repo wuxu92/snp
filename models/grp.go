@@ -103,6 +103,18 @@ func (this *Group) AddSite(title, url string) (Site, error) {
 	return site, nil
 }
 
+// RemoveSite remove one sit of this group
+// only delete the id from this.Sites, don't delete the db record
+func (this *Group) RemoveSite(sid bson.ObjectId) bool {
+	for idx, id := range this.Sites {
+		if reflect.DeepEqual(id, sid) {
+			this.Sites = append(this.Sites[:idx], this.Sites[idx+1:]...)
+			return true
+		}
+	}
+	return true
+}
+
 func (this *Group) Update() bool {
 	c := utils.GetMgc().GetDB().C("grp")
 	err := c.UpdateId(this.Id, this)

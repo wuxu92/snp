@@ -2,7 +2,7 @@
 * @Author: wuxu92
 * @Date:   2016-01-14 21:29:40
 * @Last Modified by:   wuxu92
-* @Last Modified time: 2016-01-23 17:42:47
+* @Last Modified time: 2016-01-24 14:51:25
 */
 
 'use strict';
@@ -94,7 +94,8 @@ var grpsVM = new Vue({
     saveSite: function() {
       var site = {
         name: this.newSite.name,
-        url: this.newSite.url
+        url: this.newSite.url,
+        id: ""
       }
       var grpIndx = this.addSiteIndex
       // ajax request add site
@@ -117,6 +118,7 @@ var grpsVM = new Vue({
           alert(data.message)
           return
         }
+        site.id = data.data.id
         grpsVM.groups[grpIndx].sites.push(site)
         console.log("success");
         grpsVM.newSite.name = ""
@@ -226,13 +228,51 @@ var grpsVM = new Vue({
       .always(function() {
         console.log("complete");
       });
+    },
+    deleteSite: function(event) {
+      var site = this.editSite
+      if (!site.gid || !site.id) {
+        console.log("data err")
+        return
+      }
+      // add form data to uri for delete request
+      $.ajax({
+        url: deleteSiteUri + site.id +"?grp=" + site.gid,
+        type: 'DELETE',
+        dataType: 'json',
+      })
+      .done(function(data) {
+        console.log(data)
+        if (typeof data === "string") {
+          data = $.parseJSON(data)
+        }
+        if (data.code != 0) {
+          alert("删除失败：" + data.message)
+          return
+        }
+        // remove the data from page
+        var originSite = grpsVM.groups[site.gIdx].sites[site.sIdx]
+        // var grp = grpsVM.groups[site.gIdx].sites
+        //var siteIdx = site.sIdx
+        grpsVM.groups[site.gIdx].sites.splice(site.sIdx, 1)
+        // hide the modal
+        $('#edit-site-modal').modal('hide')
+        console.log("success");
+      })
+      .fail(function() {
+        console.log("error");
+      })
+      .always(function() {
+        console.log("complete");
+      });
 
     }
   }
 })
 var pkgUri = "api/pkg/get/default"
-var addSiteUri = "api/new/site"
-var editSiteUri = "api/site/edit/" // ?grp=
+var addSiteUri = "api/new/site" // post
+var editSiteUri = "api/site/edit/" // +sid?grp=
+var deleteSiteUri = "/api/site/delete/" // +sid?grp  delete request
 $.ajax({
   url: pkgUri,
   type: 'GET',
