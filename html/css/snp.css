@@ -28,13 +28,22 @@ article {
 }
 .tools {
   float: right;
-  padding: 0 4px;
+  padding: 3px 3px 0px;
+  margin-top: -13px;
+  margin-right: -28px;
+  border: 1px solid #A0A0A0;
+  border-radius: 16px 16px;
 }
-
 .tools>a {
   padding: 1px 2px;
   cursor: pointer;
 }
+
+
+.tools .tools-ops { display: none;}
+.tools:hover .tools-ops { display: inline}
+.tools:hover .tools-trigger { display: none; }
+
 .tools span { color: #A5A5A5; }
 .tools span:hover { color: #337AB7; }
 .tools .editing-site { color:#079934; }
@@ -63,13 +72,13 @@ article {
 }
 
 .editSite {
-  background: #9CCEAF;
+  background: #c7c3c5;
   cursor: alias;
   margin-bottom: 2px;
-  border-bottom: 1px solid #eee;
+  border: 1px dotted #606060;
 }
 .editSite:hover {
-  background: #accebf !important;
+  background: #CCD2D0 !important;
 }
 .site-col input {
   border: 0;

@@ -269,7 +269,10 @@ var grpsVM = new Vue({
     }
   }
 })
-var pkgUri = "api/pkg/get/default"
+// get pkg name
+var pkgName = window.location.pathname
+if (pkgName == "/") pkgName = "/default"
+var pkgUri = "api/pkg/get" + pkgName
 var addSiteUri = "api/new/site" // post
 var editSiteUri = "api/site/edit/" // +sid?grp=
 var deleteSiteUri = "/api/site/delete/" // +sid?grp  delete request
