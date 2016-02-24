@@ -32,6 +32,9 @@
         <a v-bind:data-gidx="gIdx" class="tools-ops" title="Copy Follow link">
           <span class="glyphicon glyphicon-copy"></span>
         </a>
+        <a v-bind:data-gidx="gIdx" class="tools-ops tools-remove" title="Remove Group">
+          <span class="glyphicon glyphicon-remove"></span>
+        </a>
         <a v-bind:data-gidx="gIdx" class="tools-trigger" title="操作">
           <span class="glyphicon glyphicon-option-horizontal"></span>
         </a>
@@ -50,6 +53,12 @@
       </div>
     </div>
     </div>
+  </section>
+
+  <section id="groups-ops">
+    <!-- <span class="glyphicon glyphicon-plus" id="add-group"></span> <br> -->
+    <button class="btn btn-primary" v-on:click="addGroupModal">增加组</button>
+    <button class="btn btn-success" v-on:click="reOrderGroups">移动组</button>
   </section>
 
   <div id="modals">
@@ -104,6 +113,7 @@
           </div>
           <div class="modal-body">
             <p>新建一个组</p>
+            <input type="text" id="newGrpName" placeholder="组名"> <br>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>

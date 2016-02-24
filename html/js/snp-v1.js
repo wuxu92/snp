@@ -266,6 +266,9 @@ var grpsVM = new Vue({
         console.log("complete");
       });
 
+    },
+    addGroupModal: function() {
+      $("#new-group-modal").modal('show')
     }
   }
 })

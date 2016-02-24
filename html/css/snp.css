@@ -2,7 +2,7 @@
 * @Author: wuxu92
 * @Date:   2016-01-14 22:04:42
 * @Last Modified by:   wuxu92
-* @Last Modified time: 2016-01-23 17:41:31
+* @Last Modified time: 2016-02-01 16:56:11
 */
 header {
 
@@ -41,12 +41,15 @@ article {
 
 
 .tools .tools-ops { display: none;}
+.tools:hover { padding: 0 10px;}
 .tools:hover .tools-ops { display: inline}
 .tools:hover .tools-trigger { display: none; }
 
 .tools span { color: #A5A5A5; }
 .tools span:hover { color: #337AB7; }
 .tools .editing-site { color:#079934; }
+
+.tools-remove span { color: #A94747  !important; }
 
 .sites-row { margin: 0; }
 .site-col {
@@ -116,6 +119,12 @@ article {
 #deleteSiteBtn {
   width: 50px;
   height: 50px;
+}
+
+#groups-ops {}
+
+#add-group {
+  width:;
 }
 
 footer {
