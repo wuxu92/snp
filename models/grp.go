@@ -29,13 +29,17 @@ func (this *Group) GetSites() map[string]Site {
 	}
 	sites := make(map[string]Site)
 	c := utils.GetMgc().GetDB().C("site")
-	//  fmt.Println(this.Title, "has sites: ", len(this.Sites))
-	for _, sid := range this.Sites {
-		site := Site{}
-		err := c.FindId(sid).One(&site)
-		utils.ErrChk(err)
 
-		sites[sid.Hex()] = site
+	var siteArr []Site
+	// replace find sites using mongodb $in operator with loop find
+	c.Find(bson.M{
+		"_id": bson.M{
+			"$in": this.Sites,
+		},
+	}).All(&siteArr)
+
+	for _, site := range siteArr {
+		sites[site.Id.Hex()] = site
 	}
 	return sites
 }
@@ -68,6 +72,7 @@ func (this *Group) Copy() Group{
 	return grp
 }
 
+// check if this grp has sepc site identified by site's url
 func (this *Group) HasSite(url string) bool {
 	for _, s := range this.GetSites() {
 		if s.Url == url {
@@ -77,6 +82,7 @@ func (this *Group) HasSite(url string) bool {
 	return false
 }
 
+// check if this grp has sepc site identified by id
 func (this *Group) HasSiteId(id bson.ObjectId) bool {
 	for _, sid := range this.Sites {
 		if reflect.DeepEqual(sid, id) {
@@ -85,6 +91,10 @@ func (this *Group) HasSiteId(id bson.ObjectId) bool {
 	}
 	return false
 }
+
+// add a site to this group
+// add a site to mgo first, and then add id to
+// this.sites
 func (this *Group) AddSite(title, url string) (Site, error) {
 	site := Site{
 		bson.NewObjectId(),
@@ -115,10 +125,23 @@ func (this *Group) RemoveSite(sid bson.ObjectId) bool {
 	return true
 }
 
+// update change to mongodb
 func (this *Group) Update() bool {
 	c := utils.GetMgc().GetDB().C("grp")
 	err := c.UpdateId(this.Id, this)
 	return err == nil
+}
+
+// get sites in []string slice
+func (this *Group) SiteStrings() []string {
+	siteStrs := make([]string, len(this.Sites))
+	var i = 0
+	for _, sid := range this.Sites {
+		siteStrs[i] = sid.Hex()
+		i++
+	}
+
+	return siteStrs
 }
 
 func GetGroupById(id bson.ObjectId) Group {
@@ -139,6 +162,8 @@ func IsGroupExist(id bson.ObjectId) bool {
 	return count > 0
 }
 
+// used for init the project only
+// @deprecated
 func GetGroupFromSites(title string, sites []Site, start, length int) Group {
 	group := Group{}
 	group.Id = bson.NewObjectId()
