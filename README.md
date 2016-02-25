@@ -36,6 +36,6 @@ what you should do before run snp in your server is config the MongoDB. config i
 replace the mgo host, port, username and password with your own.
 
 ### TODO
-this project is partly  RESTful implemented, that is, for some apis they meet RESTful requires, but others designed at first is not.
+this project is partly  RESTful implemented, that is, for some apis they meet RESTful requires, but others designed at first does not.
 
 so one important thing is to change all apis to meet RESTful

@@ -88,9 +88,9 @@ func (this *SiteController) Post() {
 	this.ServeJson()
 }
 
-// Delete uri: /api/site/delete/:id?grp=gid delete
+// Delete uri: /api/site/delete/:id?grp=gid&p=password delete
 // @todo add grp and password
-func (this *SiteController)Delete() {
+func (this *SiteController) Delete() {
   sid := this.Ctx.Input.Param(":id")
   action := this.Ctx.Input.Param(":action")
   gid := this.GetString("grp")

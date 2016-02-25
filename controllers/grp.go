@@ -5,12 +5,12 @@ import (
 	"snp/models"
 	//	"snp/utils"
 
-	"github.com/astaxie/beego"
 	"gopkg.in/mgo.v2/bson"
+  "snp/utils"
 )
 
 type GrpController struct {
-	beego.Controller
+	BaseController
 }
 
 func (this *GrpController) Get() {
@@ -29,6 +29,49 @@ func (this *GrpController) Get() {
 	case "delete":
 		deleteGroup(id)
 	}
+}
+
+// delete group uri : /api/grp/delete/:id?p=password&pkg=pkgName   with delete request
+// todo check password
+func (this *GrpController) Delete() {
+  gid := this.Ctx.Input.Param(":id")
+  action := this.Ctx.Input.Param(":action")
+  password := this.GetString("p")
+  pkgName := this.GetString("pkg")
+  data := ResObj{}
+
+  // log request
+  utils.GetConsole().Info("a: %s, grp: %s, p: %s", action, gid, password)
+
+  pkg, err := models.GetPkgByName(pkgName)
+  if err != nil {
+    data.SetCode(CODE_NO_SUCH_PKG)
+    this.Json(data)
+    return
+  }
+
+  if !bson.IsObjectIdHex(gid) {
+    data.SetCode(CODE_MGO_BAD_ID)
+    this.Json(data)
+    return
+  }
+  // todo check password
+  if !pkg.CheckPassword(password) {
+    data.SetCode(CODE_PASSWORD_ERR)
+    this.Json(data)
+    return
+  }
+
+  // do delete process
+  // just remove id from pkg's grp list
+  deleted := pkg.RemoveGroup(gid)
+  if !deleted {
+    data.SetCode(CODE_NO_SUCH_GRP)
+  } else {
+    data.SetCode(CODE_OK)
+  }
+
+  this.Json(data)
 }
 
 func getGroup(id string) map[string]interface{} {

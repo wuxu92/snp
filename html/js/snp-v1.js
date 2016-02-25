@@ -279,6 +279,8 @@ var pkgUri = "api/pkg/get" + pkgName
 var addSiteUri = "api/new/site" // post
 var editSiteUri = "api/site/edit/" // +sid?grp=
 var deleteSiteUri = "/api/site/delete/" // +sid?grp  delete request
+
+var deleteGroupUri = "/api/grp/delete/" // +grpId delete request
 $.ajax({
   url: pkgUri,
   type: 'GET',

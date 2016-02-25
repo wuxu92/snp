@@ -6,6 +6,7 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 	"time"
+  "strings"
 )
 
 type Pkg struct {
@@ -22,6 +23,7 @@ type Pkg struct {
 	Version         int             `json:"version"`
 }
 
+// get pkg's groups list as a map, using grp id as key
 func (this *Pkg) GetGroups() map[string]Group {
 	grpLen := len(this.Groups)
 	if grpLen == 0 {
@@ -30,12 +32,24 @@ func (this *Pkg) GetGroups() map[string]Group {
 	grps := make(map[string]Group, grpLen)
 	mgc := utils.GetMgc()
 	c := mgc.GetDB().C("grp")
-	for _, id := range this.Groups {
-		grp := Group{}
-		err := c.FindId(id).One(&grp)
-		utils.ErrChk(err)
+//	for _, id := range this.Groups {
+//		grp := Group{}
+//		err := c.FindId(id).One(&grp)
+//		utils.ErrChk(err)
+//
+//		grps[id.Hex()] = grp
+//	}
 
-		grps[id.Hex()] = grp
+	// replace find sites methods, using $in operator instead
+	var grpArr []Group
+	c.Find(bson.M{
+		"_id": bson.M{
+			"$in": this.Groups,
+		},
+	}).All(&grpArr)
+
+	for _, grp := range grpArr {
+		grps[grp.Id.Hex()] = grp
 	}
 
 	return grps
@@ -92,6 +106,37 @@ func (this *Pkg) Copy(newName string) (Pkg, error) {
 	return pkg, nil
 }
 
+// check this package's password
+// TODO use hash/encrypt in future
+func (this *Pkg) CheckPassword(p string) bool {
+  if strings.Compare(this.Password, p) == 0 {
+    return true
+  } else {
+    return false
+  }
+}
+
+// remove one group specified by id from this pkg
+func (this *Pkg) RemoveGroup(id string) bool{
+  for idx, gid := range this.Groups {
+    if strings.Compare(gid.Hex(), id) == 0 {
+      this.Groups = append(this.Groups[:idx], this.Groups[idx+1:]...)
+      err := this.Update()
+      return err == nil
+    }
+  }
+
+  // for no such a group in this pkg
+  return false
+}
+
+// save change to mongodb
+func (this *Pkg) Update() error{
+  c := utils.GetMgc().GetDB().C("pkg")
+  err := c.UpdateId(this.Id, this)
+  return err
+}
+
 func GetPkgFullInfo(name string) map[string]interface{} {
 	pkg, _ := GetPkgByName(name)
 	data := make(map[string]interface{})
@@ -121,7 +166,7 @@ func GetPkgByName(name string) (Pkg, error) {
 }
 
 /**
- * check if a name allready exist
+ * check if a name already exist
  */
 func CheckPkgName(name string) bool {
 	mgc := utils.GetMgc()
@@ -136,6 +181,9 @@ func CheckPkgName(name string) bool {
 	}
 }
 
+
+// init project
+// @deprecated
 func GetInitPkg(grps []Group) Pkg {
 	pkg := Pkg{
 		bson.NewObjectId(),
