@@ -347,7 +347,7 @@ $.ajax({
       sIdx = grp.sites[sIdx];
       site = data.sites[sIdx]
       tmp.sites.push({
-        name: site.title.substr(0, 8),
+        name: site.title.substr(0, 20),
         url: site.url,
         id: sIdx
       })

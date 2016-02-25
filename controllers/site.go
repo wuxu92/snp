@@ -145,7 +145,7 @@ func getSite(id string) models.Site {
 	site := models.Site{}
 	err := c.FindId(bson.ObjectIdHex(id)).One(&site)
 	if err != nil {
-		fmt.Println("not site find for: ", id)
+		fmt.Println("not site find for: ", id, err.Error())
 	}
 	return site
 }
