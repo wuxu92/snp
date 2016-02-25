@@ -31,11 +31,12 @@ location /api {
 ```
 this config is a little tedious... though it is a really bad design, i like it. because i build it.
 
-### setup MongoDB
+### Setup MongoDB
 what you should do before run snp in your server is config the MongoDB. config it at `/path/to/project/conf/app.conf`
 replace the mgo host, port, username and password with your own.
 
 ### TODO
 this project is partly  RESTful implemented, that is, for some apis they meet RESTful requires, but others designed at first does not.
 
-so one important thing is to change all apis to meet RESTful
+1. one important thing is to change all apis to meet RESTful
+2. for now, Package without a forkFrom property, so can't trace back where a forked package from...

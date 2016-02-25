@@ -121,6 +121,7 @@ func (this *Pkg) RemoveGroup(id string) bool{
   for idx, gid := range this.Groups {
     if strings.Compare(gid.Hex(), id) == 0 {
       this.Groups = append(this.Groups[:idx], this.Groups[idx+1:]...)
+      // save changes
       err := this.Update()
       return err == nil
     }

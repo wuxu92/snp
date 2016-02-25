@@ -32,7 +32,7 @@
         <a v-bind:data-gidx="gIdx" class="tools-ops" title="Copy Follow link">
           <span class="glyphicon glyphicon-copy"></span>
         </a>
-        <a v-bind:data-gidx="gIdx" class="tools-ops tools-remove" title="Remove Group">
+        <a v-bind:data-gidx="gIdx" class="tools-ops tools-remove" title="Remove Group" v-on:click.prevent.stop="deleteGroup()">
           <span class="glyphicon glyphicon-remove"></span>
         </a>
         <a v-bind:data-gidx="gIdx" class="tools-trigger" title="操作">
@@ -117,7 +117,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-            <button type="button" class="btn btn-primary" v-on:click="saveSite">添加</button>
+            <button type="button" class="btn btn-primary" v-on:click="newGroup">添加</button>
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
@@ -128,7 +128,8 @@
 <footer>
   <address>
     For more details, contact
-    <a href="mailto:wuxu92@outlook.com" title="Wu Xu">Wu Xu</a>.
+    <a href="mailto:wuxu92@outlook.com" title="Wu Xu">Wu Xu</a>.|
+    Fork Project from <a href="http://github.com/wuxu92/snp" target="_blank">Github</a>
   </address>
   <p><span class="glyphicon glyphicon-copyright-mark"></span></p>
 </footer>

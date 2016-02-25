@@ -269,16 +269,53 @@ var grpsVM = new Vue({
     },
     addGroupModal: function() {
       $("#new-group-modal").modal('show')
+    },
+    newGroup: function() {
+
+    },
+    deleteGroup: function() {
+      var curNode = $(event.currentTarget)
+      var gIdx = curNode.data("gidx")
+      if (!gIdx) return
+
+      var group = this.groups[gIdx]
+      if (!group || !group.id) {
+        console.log("group error")
+        return
+      }
+      var uri = deleteGroupUri + group.id + "?p=" + password +
+        "&pkg=" + pkgName
+      $.ajax({
+        url: uri,
+        type: "delete",
+        dataType: "json"
+      })
+      .done(function(data) {
+        if (typeof data == "string") {
+          data = $.parseJSON(data)
+        }
+        console.log(data)
+
+        // delete success
+        if (data.code == 0) {
+          // remove current group section from page
+          grpsVM.groups.splice(gIdx, 1)
+//          curNode.parents
+        } else {
+          alert("delete group " + group.name + "error: " + data.message)
+        }
+      })
     }
   }
 })
 // get pkg name
-var pkgName = window.location.pathname
-if (pkgName == "/") pkgName = "/default"
-var pkgUri = "api/pkg/get" + pkgName
+var pkgName = window.location.pathname.substring(1)
+if (pkgName == "") pkgName = "default"
+var pkgUri = "api/pkg/get/" + pkgName
 var addSiteUri = "api/new/site" // post
 var editSiteUri = "api/site/edit/" // +sid?grp=
 var deleteSiteUri = "/api/site/delete/" // +sid?grp  delete request
+var password = "123456"
 
 var deleteGroupUri = "/api/grp/delete/" // +grpId delete request
 $.ajax({

@@ -41,7 +41,7 @@ article {
 
 
 .tools .tools-ops { display: none;}
-.tools:hover { padding: 0 10px;}
+.tools:hover { padding: 0 30px 0 10px;}
 .tools:hover .tools-ops { display: inline}
 .tools:hover .tools-trigger { display: none; }
 
