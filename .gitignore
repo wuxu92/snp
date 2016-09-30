@@ -11,3 +11,4 @@
 .idea/
 logs/
 log/
+conf/app.conf
