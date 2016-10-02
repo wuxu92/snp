@@ -18,12 +18,12 @@ func (this *GrpController) Get() {
 	id := this.Ctx.Input.Param(":id")
 	if len(id) == 0 {
 		this.Data["json"] = nil
-		this.ServeJson()
+		this.ServeJSON()
 	}
 	switch action {
 	case "get":
 		this.Data["json"] = getGroup(id)
-		this.ServeJson()
+		this.ServeJSON()
 	case "update":
 		updateGroup(id)
 	case "delete":

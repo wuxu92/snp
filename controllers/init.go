@@ -71,7 +71,7 @@ func(ctl *InitController) Get() {
   ctl.Data["Website"] = "wuxu92.com"
   ctl.Data["Email"] = "admin@wuxu92.com"
   ctl.Layout = "layout/main.html"
-  ctl.TplNames = "init.tpl"
+  ctl.TplName = "init.tpl"
   ctl.Render()
 }
 

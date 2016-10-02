@@ -12,14 +12,14 @@ h3#page-title {
 }
 article {
   min-width: 110px;
-  width: 80%;
-  margin: 0 auto;
+  width: 98%;
+  /* margin: 0 auto; */
 }
 .groups-section {
   border: 1px solid #eee;
   /*border-bottom: none;*/
   margin: 10px 0;
-  padding: 16px 32px;
+  padding: 16px 2px;
 }
 
 /*grp-head*/
@@ -56,6 +56,7 @@ article {
   text-align: center;
   padding: 0 4px;
   border-right: 1px solid #eee;
+  overflow: hidden;
 }
 
 .site-col a {

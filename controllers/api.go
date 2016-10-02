@@ -31,9 +31,9 @@ func (ctl *ApiController) Get() {
 		fmt.Println("getting pkg:", id)
 		ctl.Data["json"] = models.GetPkgFullInfo(id)
 		ctl.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf8")
-		ctl.ServeJson()
+		ctl.ServeJSON()
 	} else {
-		ctl.ServeJson()
+		ctl.ServeJSON()
 	}
 }
 

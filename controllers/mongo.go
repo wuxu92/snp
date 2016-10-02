@@ -50,5 +50,5 @@ package controllers
 //  ctl.Data["Website"] = "wuxu92.com"
 //  ctl.Data["Email"] = "admin@wuxu92.com"
 //  ctl.Layout = "layout/main.html"
-//  ctl.TplNames = "mongo.tpl"
+//  ctl.TplName = "mongo.tpl"
 //}

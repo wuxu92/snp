@@ -47,7 +47,7 @@ func (this *NewModelController) Post() {
 	case "pkg" :
 	}
 
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 func newSite(title, url, grpId string) (models.Site, error) {

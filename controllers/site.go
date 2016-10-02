@@ -17,12 +17,12 @@ func (this *SiteController) Get() {
 	id := this.Ctx.Input.Param(":id")
 	if len(id) == 0 {
 		this.Data["json"] = nil
-		this.ServeJson()
+		this.ServeJSON()
 	}
 	switch action {
 	case "get":
 		this.Data["json"] = getSite(id)
-		this.ServeJson()
+		this.ServeJSON()
 	case "update":
 		updateSite(id)
 	case "delete":
@@ -46,7 +46,7 @@ func (this *SiteController) Post() {
 		data.code = 1
 		data.message = "one of grp/title/url is null"
 		this.Data["json"] = data.Json()
-		this.ServeJson()
+		this.ServeJSON()
 		return
 	}
 	// get group
@@ -62,7 +62,7 @@ func (this *SiteController) Post() {
 			data.message = "group and site not exist"
 		}
 		this.Data["json"] = data.Json()
-		this.ServeJson()
+		this.ServeJSON()
 		return
 	}
 	grp := models.GetGroupById(grpId)
@@ -70,7 +70,7 @@ func (this *SiteController) Post() {
 		data.code = 3
 		data.message = "grp do't has this site"
 		this.Data["json"] = data.Json()
-		this.ServeJson()
+		this.ServeJSON()
 		return
 	}
 	site := models.GetSiteById(siteId)
@@ -85,7 +85,7 @@ func (this *SiteController) Post() {
 		data.message = "ok"
 	}
 	this.Data["json"] = data.Json()
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // Delete uri: /api/site/delete/:id?grp=gid&p=password delete
@@ -101,7 +101,7 @@ func (this *SiteController) Delete() {
     data.code = 1
     data.message = "one of site or grp is illeagal"
     this.Data["json"] = data.Json()
-    this.ServeJson()
+    this.ServeJSON()
     return
   }
   siteId := bson.ObjectIdHex(sid)
@@ -137,7 +137,7 @@ func (this *SiteController) Delete() {
 
 func (this *SiteController) json(d ResObj) {
   this.Data["json"] = d.Json()
-  this.ServeJson()
+  this.ServeJSON()
 }
 
 func getSite(id string) models.Site {

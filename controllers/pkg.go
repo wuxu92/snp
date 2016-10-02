@@ -49,7 +49,7 @@ func (this *PkgController) Get() {
 		}
 	}
 	this.Ctx.ResponseWriter.Header().Set("Content-Type", "application/json; charset=utf8")
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 /**

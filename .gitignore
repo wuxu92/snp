@@ -1,4 +1,6 @@
 *.exe
+*.out
+snp
 *.exe*
 *.tmp
 *.zip
